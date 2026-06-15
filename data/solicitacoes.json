@@ -1,1 +1,27 @@
-[]
+[
+  {
+    "id": "ca0ec10d-e61b-494f-aea1-8cbb233daa97",
+    "data_abertura": "15/06/2026",
+    "dia_abertura": "Segunda-feira",
+    "hora_abertura": "14:07:02",
+    "criado_em": "2026-06-15T17:07:02.672014+00:00",
+    "atualizado_em": "2026-06-15T17:07:02.672014+00:00",
+    "nome": "teste",
+    "area": "Fábrica",
+    "setor_local": "teste",
+    "destino": "Engenharia de Processo",
+    "tipo_solicitacao": "Correção / arrumar algo",
+    "prioridade": "Média",
+    "local_exato": "teste",
+    "titulo": "teste",
+    "problema": "teste",
+    "solicitacao": "teste",
+    "impacto": "Dificulta o processo",
+    "observacoes": "teste",
+    "status": "Recebido",
+    "email_status": "Processando envio",
+    "github_status": "Processando sincronização",
+    "possui_foto": false,
+    "foto_base64": null
+  }
+]
