@@ -1,772 +1,123 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solicitação de Melhoria e Correção</title>
-  <style>
-    :root{
-      --page:#050b16;
-      --header:#07111f;
-      --card:#102540;
-      --card2:#0c1b30;
-      --line:#24425f;
-      --text:#f4f8ff;
-      --muted:#c7d7ea;
-      --muted2:#91a6bc;
-      --blue:#2f80ed;
-      --blue2:#153a66;
-      --green:#22c55e;
-      --red:#ef4444;
-      --yellow:#f59e0b;
-      --shadow:0 18px 45px rgba(0,0,0,.32);
-      --radius:14px;
-    }
-
-    *{box-sizing:border-box}
-
-    body{
-      margin:0;
-      min-height:100vh;
-      font-family:Arial,Helvetica,sans-serif;
-      background:
-        radial-gradient(circle at 86% 14%,rgba(47,128,237,.13),transparent 23%),
-        linear-gradient(180deg,#07111f 0,#050b16 55%,#040914 100%);
-      color:var(--text);
-    }
-
-    header{
-      background:rgba(7,17,31,.98);
-      border-bottom:1px solid rgba(255,255,255,.08);
-      padding:14px 24px 17px;
-    }
-
-    .wrap{
-      width:min(954px,calc(100vw - 48px));
-      margin:0 auto;
-    }
-
-    .head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:18px;
-    }
-
-    h1{
-      margin:0 0 6px;
-      font-size:28px;
-      line-height:1.15;
-      letter-spacing:-.4px;
-    }
-
-    h2{margin:0 0 12px;font-size:32px;line-height:1.12;letter-spacing:-.5px}
-    h3{margin:0 0 9px;font-size:20px;line-height:1.2}
-    p{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
-
-    .subtitle{font-size:13px;color:var(--muted);line-height:1.45}
-
-    .badge{
-      flex:0 0 auto;
-      color:#d9ecff;
-      background:rgba(47,128,237,.13);
-      border:1px solid rgba(47,128,237,.55);
-      border-radius:999px;
-      padding:8px 13px;
-      font-weight:700;
-      font-size:11px;
-      white-space:nowrap;
-    }
-
-    main{padding:20px 0 36px}
-    .screen{display:none}.screen.active{display:block}
-
-    .hero{
-      display:grid;
-      grid-template-columns:1.1fr .9fr;
-      gap:18px;
-      margin-bottom:18px;
-    }
-
-    .card{
-      position:relative;
-      overflow:hidden;
-      background:linear-gradient(180deg,rgba(16,37,64,.98),rgba(11,27,48,.98));
-      border:1px solid rgba(80,130,180,.28);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-    }
-
-    .hero-card{
-      min-height:235px;
-      padding:26px 23px;
-    }
-
-    .hero-card::after{
-      content:"";
-      position:absolute;
-      width:210px;
-      height:210px;
-      right:-48px;
-      top:-58px;
-      border-radius:50%;
-      background:radial-gradient(circle,rgba(47,128,237,.22),transparent 70%);
-      pointer-events:none;
-    }
-
-    .hero-card > *{position:relative;z-index:1}
-
-    .flow-list{
-      display:grid;
-      gap:12px;
-      position:relative;
-      z-index:1;
-    }
-
-    .flow-step{
-      display:flex;
-      gap:12px;
-      align-items:flex-start;
-      min-height:55px;
-      padding:11px 12px;
-      background:rgba(5,13,25,.52);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:10px;
-    }
-
-    .flow-number,
-    .card-number{
-      width:24px;
-      height:24px;
-      display:grid;
-      place-items:center;
-      border-radius:50%;
-      font-size:12px;
-      font-weight:800;
-      color:#dbeeff;
-      background:rgba(47,128,237,.26);
-      flex:0 0 auto;
-    }
-
-    .flow-step strong{display:block;font-size:14px;line-height:1.15;margin-bottom:4px;color:var(--text)}
-    .flow-step span{display:block;font-size:11px;color:#bfd3e8;line-height:1.35}
-
-    .option-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:14px;
-      margin-bottom:18px;
-    }
-
-    .option-card{
-      min-height:276px;
-      padding:20px;
-      cursor:pointer;
-      transition:.18s ease;
-    }
-
-    .option-card:hover{
-      transform:translateY(-2px);
-      border-color:rgba(47,128,237,.55);
-    }
-
-    .card-number{
-      width:42px;
-      height:42px;
-      border-radius:12px;
-      margin-bottom:14px;
-      font-size:14px;
-      border:1px solid rgba(47,128,237,.36);
-    }
-
-    .card-number.green{
-      background:rgba(34,197,94,.15);
-      border-color:rgba(34,197,94,.35);
-      color:#d9ffe6;
-    }
-
-    .option-card p{font-size:12px;margin-bottom:16px;color:#d6e7f8}
-    ul{margin:0 0 28px;padding-left:17px;color:#e3effc;font-size:11px;line-height:1.7}
-
-    .card-action{
-      position:absolute;
-      left:20px;
-      right:20px;
-      bottom:18px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding-top:12px;
-      border-top:1px solid rgba(255,255,255,.08);
-      color:#f4f8ff;
-      font-size:14px;
-      font-weight:800;
-    }
-
-    .examples{
-      padding:18px;
-    }
-
-    .examples h3{font-size:16px;margin-bottom:10px}
-
-    .example-grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:10px;
-    }
-
-    .example-box{
-      min-height:78px;
-      padding:12px;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:10px;
-      background:rgba(5,13,25,.43);
-    }
-
-    .example-box strong{
-      display:block;
-      color:#fff;
-      font-size:13px;
-      margin-bottom:7px;
-    }
-
-    .example-box span{
-      display:block;
-      color:#cbdcee;
-      font-size:11px;
-      line-height:1.45;
-    }
-
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      margin-bottom:14px;
-    }
-
-    .breadcrumb{color:var(--muted2);font-size:13px}
-    .breadcrumb strong{color:#e7f1ff}
-
-    .content-grid{
-      display:grid;
-      grid-template-columns:1fr .95fr;
-      gap:18px;
-      align-items:start;
-    }
-
-    .title{
-      padding:18px 20px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-    }
-
-    .title h2{font-size:20px;margin:0}
-    .title small{display:block;margin-top:5px;color:var(--muted2);line-height:1.35}
-
-    form{padding:20px}
-    .field{margin-bottom:14px}
-    .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-
-    label{
-      display:block;
-      margin-bottom:6px;
-      font-size:13px;
-      font-weight:700;
-      color:#dbe7f6;
-    }
-
-    .req{color:#ffb4b4}
-
-    input,select,textarea{
-      width:100%;
-      border:1px solid var(--line);
-      background:rgba(5,13,25,.62);
-      color:var(--text);
-      border-radius:10px;
-      padding:11px 12px;
-      font-size:13px;
-      outline:none;
-    }
-
-    input:focus,select:focus,textarea:focus{
-      border-color:var(--blue);
-      box-shadow:0 0 0 3px rgba(47,128,237,.18);
-    }
-
-    input[readonly]{background:rgba(5,13,25,.35);color:#d9e6f7}
-    textarea{min-height:100px;resize:vertical}
-
-    .checks{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:8px;
-    }
-
-    .check{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      margin:0;
-      padding:10px;
-      border:1px solid var(--line);
-      border-radius:10px;
-      background:rgba(5,13,25,.4);
-      color:#bfd3e8;
-      font-weight:400;
-    }
-
-    .check input{width:auto;accent-color:var(--blue)}
-
-    .preview{
-      display:none;
-      width:100%;
-      max-height:220px;
-      object-fit:contain;
-      margin-top:10px;
-      background:rgba(255,255,255,.04);
-      border:1px solid var(--line);
-      border-radius:10px;
-    }
-
-    .buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-
-    button{
-      border:0;
-      border-radius:10px;
-      padding:11px 14px;
-      background:var(--blue);
-      color:#fff;
-      font-size:13px;
-      font-weight:800;
-      cursor:pointer;
-      transition:.16s ease;
-    }
-
-    button:hover{filter:brightness(1.06);transform:translateY(-1px)}
-    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
-    .secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}
-    .danger{background:var(--red)}
-    .success{background:var(--green)}
-
-    .note{
-      margin:0 20px 20px;
-      padding:13px;
-      border-radius:10px;
-      line-height:1.45;
-      font-size:13px;
-      color:#fff0cf;
-      background:rgba(245,158,11,.12);
-      border:1px solid rgba(245,158,11,.38);
-    }
-
-    .help{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-      padding:16px 20px;
-    }
-
-    .help-box{
-      padding:13px;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:10px;
-      background:rgba(5,13,25,.42);
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.45;
-    }
-
-    .help-box strong{display:block;color:#fff;margin-bottom:5px}
-
-    .stats{
-      display:grid;
-      grid-template-columns:repeat(6,1fr);
-      gap:10px;
-      padding:18px 20px 0;
-    }
-
-    .stat{
-      padding:13px;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:10px;
-      background:rgba(5,13,25,.48);
-    }
-
-    .stat strong{display:block;font-size:23px;margin-bottom:4px}
-    .stat span{font-size:11px;color:var(--muted2)}
-
-    .toolbar{
-      display:grid;
-      grid-template-columns:1fr 160px 160px 170px;
-      gap:10px;
-      padding:18px 20px;
-    }
-
-    .table-wrap{overflow-x:auto;padding:0 20px 20px}
-    table{width:100%;border-collapse:collapse;min-width:1120px}
-    th,td{padding:11px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;vertical-align:top;font-size:12px}
-    th{font-size:11px;text-transform:uppercase;color:#cfe2fa;background:rgba(255,255,255,.04)}
-    .mini{display:block;margin-top:5px;color:var(--muted2);font-size:11px;line-height:1.35}
-    .tag{display:inline-block;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:5px 8px;font-size:10px;font-weight:800;margin:0 4px 4px 0}
-    .eng{background:rgba(47,128,237,.18);color:#cfe2fa}
-    .sgq{background:rgba(34,197,94,.18);color:#d4ffe2}
-    .man{background:rgba(245,158,11,.18);color:#fff0cf}
-    .empty{text-align:center;color:var(--muted2);padding:30px}
-    .photo{color:#9dccff;text-decoration:none;font-weight:800}
-
-    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.76);align-items:center;justify-content:center;padding:20px;z-index:99}
-    .modalbox{width:min(880px,100%);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
-    .modal img{width:100%;max-height:70vh;object-fit:contain;border-radius:10px;background:rgba(255,255,255,.04)}
-
-    @media(max-width:900px){
-      header{padding:14px 18px 16px}
-      .wrap{width:min(954px,calc(100vw - 32px))}
-      .head{align-items:flex-start}
-      .badge{font-size:10px;padding:7px 10px}
-      .hero,.option-grid,.content-grid{grid-template-columns:1fr}
-      .example-grid{grid-template-columns:repeat(2,1fr)}
-      .stats{grid-template-columns:repeat(2,1fr)}
-      .toolbar,.two,.three,.checks,.help{grid-template-columns:1fr}
-      .hero-card{min-height:auto}
-    }
-
-    @media(max-width:560px){
-      h1{font-size:24px}
-      h2{font-size:26px}
-      .example-grid{grid-template-columns:1fr}
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Solicitação de Melhoria e Correção</title>
+<style>
+:root{--bg:#050b16;--card:#102540;--line:#24425f;--txt:#f4f8ff;--muted:#bcd0e5;--blue:#2f80ed;--green:#22c55e;--red:#ef4444}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(#07111f,#050b16);color:var(--txt)}
+header{padding:18px 24px;border-bottom:1px solid #20384f;background:#07111f}.wrap{max-width:1050px;margin:auto}
+h1{margin:0 0 6px;font-size:30px}p{color:var(--muted);line-height:1.5}
+.badge{display:inline-block;margin-top:14px;border:1px solid var(--blue);border-radius:999px;padding:8px 14px;background:#0d2a4b}
+.screen{display:none}.active{display:block}main{padding:22px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 14px 40px #0006}.option{cursor:pointer;min-height:240px}
+.n{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-weight:bold;background:#123c6b;margin-bottom:16px}.n.g{background:#104d31}
+button{border:0;border-radius:10px;background:var(--blue);color:white;font-weight:bold;padding:11px 14px;cursor:pointer}.secondary{background:#182b42;border:1px solid var(--line)}.success{background:var(--green)}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.field{margin-bottom:13px}
+label{display:block;font-size:13px;font-weight:bold;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:#07111f;color:var(--txt)}textarea{min-height:90px}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}.check{border:1px solid var(--line);border-radius:10px;padding:9px;color:var(--muted)}.check input{width:auto}
+.preview{display:none;max-height:180px;width:100%;object-fit:contain;margin-top:8px;border:1px solid var(--line);border-radius:10px}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px}.stat{background:#07111f;border:1px solid var(--line);border-radius:10px;padding:12px}.stat b{font-size:22px;display:block}
+.tools{display:grid;grid-template-columns:1fr 170px 140px 160px;gap:10px;margin-bottom:15px}.table{overflow:auto}table{width:100%;border-collapse:collapse;min-width:1050px}th,td{border-bottom:1px solid #ffffff14;padding:10px;text-align:left;vertical-align:top;font-size:12px}th{color:#cfe2fa;background:#ffffff0a}
+.mini{display:block;color:#8fa9c4;margin-top:4px}.tag{border:1px solid #ffffff24;border-radius:999px;padding:4px 7px}.photo{color:#9dccff;font-weight:bold}.modal{display:none;position:fixed;inset:0;background:#000b;align-items:center;justify-content:center;padding:20px}.modal>div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;max-width:850px;width:100%}.modal img{max-height:70vh;width:100%;object-fit:contain}
+.note{border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--muted);background:#07111f;margin-top:16px}
+@media(max-width:850px){.grid,.formgrid,.three,.checks,.stats,.tools{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-  <header>
-    <div class="wrap head">
-      <div>
-        <h1>Solicitação de Melhoria e Correção</h1>
-        <p class="subtitle">Canal para registrar algo que precisa ser melhorado, ajustado ou arrumado, com data e dia de abertura.</p>
-      </div>
-      <div class="badge">Eng. Processo • SGQ • Manutenção</div>
-    </div>
-  </header>
+<header><div class="wrap"><h1>Solicitação de Melhoria e Correção</h1><p>Canal para registrar melhorias e correções. Dados salvos no Supabase.</p><span class="badge">Eng. Processo • SGQ • Manutenção</span></div></header>
+<main class="wrap">
+<section id="home" class="screen active">
+<div class="grid">
+<div class="card"><h2>Escolha o que deseja fazer</h2><p>Use para correção, melhoria, organização, padronização, ergonomia ou segurança preventiva.</p></div>
+<div class="card"><p><b>Fluxo:</b></p><p>1. Abrir solicitação<br>2. Registrar data e hora<br>3. Salvar no Supabase<br>4. Acompanhar no painel</p></div>
+<div class="card option" onclick="show('form')"><div class="n g">01</div><h2>Abrir solicitação</h2><p>Registrar uma melhoria ou correção.</p><ul><li>Mesa da pré-formatação quebrada</li><li>Posto sem identificação</li><li>Organização ruim</li><li>Melhoria de fluxo</li></ul></div>
+<div class="card option" onclick="show('panel')"><div class="n">02</div><h2>Painel</h2><p>Consultar solicitações e atualizar status.</p></div>
+</div>
+</section>
 
-  <main class="wrap">
-    <section id="home" class="screen active">
-      <div class="hero">
-        <div class="card hero-card">
-          <h2>Escolha o que deseja fazer</h2>
-          <p>O formulário serve para solicitação de melhoria, correção, organização, padronização, ergonomia ou segurança preventiva. A solicitação deve ser direcionada para Engenharia de Processo, SGQ ou Manutenção.</p>
-        </div>
+<section id="form" class="screen">
+<div class="top"><span>Menu / <b>Abrir solicitação</b></span><button class="secondary" onclick="show('home')">Voltar</button></div>
+<div class="card"><h2>Formulário de solicitação</h2>
+<form id="frm">
+<div class="three"><div class="field"><label>Data</label><input id="data" readonly></div><div class="field"><label>Dia</label><input id="dia" readonly></div><div class="field"><label>Hora</label><input id="hora" readonly></div></div>
+<div class="formgrid"><div class="field"><label>Nome</label><input id="nome"></div><div class="field"><label>Área*</label><select id="area" required><option value="">Selecione</option><option>Fábrica</option><option>ADM</option><option>Outro</option></select></div></div>
+<div class="formgrid"><div class="field"><label>Setor / processo / local*</label><input id="setor" required></div><div class="field"><label>Direcionar para*</label><select id="destino" required><option value="">Selecione</option><option>Engenharia de Processo</option><option>SGQ</option><option>Manutenção</option></select></div></div>
+<div class="three"><div class="field"><label>Tipo*</label><select id="tipo" required><option value="">Selecione</option><option>Correção / arrumar algo</option><option>Melhoria de processo</option><option>Organização / 5S</option><option>Identificação / padronização</option><option>Ergonomia</option><option>Segurança preventiva</option><option>Outro</option></select></div><div class="field"><label>Prioridade</label><select id="prioridade"><option>Baixa</option><option selected>Média</option><option>Alta</option></select></div><div class="field"><label>Local exato*</label><input id="local" required></div></div>
+<div class="field"><label>Título*</label><input id="titulo" required></div>
+<div class="field"><label>O que foi observado?*</label><textarea id="problema" required></textarea></div>
+<div class="field"><label>O que você sugere ou solicita?*</label><textarea id="solicitacao" required></textarea></div>
+<div class="field"><label>Impacto</label><div class="checks">
+<label class="check"><input type="checkbox" name="impacto" value="Dificulta o processo"> Dificulta o processo</label>
+<label class="check"><input type="checkbox" name="impacto" value="Gera perda de tempo"> Gera perda de tempo</label>
+<label class="check"><input type="checkbox" name="impacto" value="Pode gerar erro"> Pode gerar erro</label>
+<label class="check"><input type="checkbox" name="impacto" value="Afeta organização"> Afeta organização</label>
+<label class="check"><input type="checkbox" name="impacto" value="Afeta ergonomia"> Afeta ergonomia</label>
+<label class="check"><input type="checkbox" name="impacto" value="Risco preventivo"> Risco preventivo</label>
+</div></div>
+<div class="field"><label>Foto</label><input id="foto" type="file" accept="image/*"><img id="preview" class="preview"></div>
+<div class="field"><label>Observações</label><textarea id="obs"></textarea></div>
+<button type="submit">Registrar solicitação</button> <button type="reset" class="secondary">Limpar</button>
+</form>
+<div class="note">Salvamento via Supabase Edge Function.</div>
+</div>
+</section>
 
-        <div class="card hero-card">
-          <div class="flow-list">
-            <div class="flow-step">
-              <div class="flow-number">1</div>
-              <div><strong>Abrir solicitação</strong><span>Informar área, setor/local, problema, solicitação e foto.</span></div>
-            </div>
-            <div class="flow-step">
-              <div class="flow-number">2</div>
-              <div><strong>Registrar abertura</strong><span>Data, dia da semana e horário são preenchidos automaticamente.</span></div>
-            </div>
-            <div class="flow-step">
-              <div class="flow-number">3</div>
-              <div><strong>Acompanhar status</strong><span>Recebido, em análise, em execução ou concluído.</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
+<section id="panel" class="screen">
+<div class="top"><span>Menu / <b>Painel</b></span><button class="secondary" onclick="show('home')">Voltar</button></div>
+<div class="card"><h2>Painel de solicitações</h2>
+<div class="stats"><div class="stat"><b id="stT">0</b>Total</div><div class="stat"><b id="stE">0</b>Eng.</div><div class="stat"><b id="stS">0</b>SGQ</div><div class="stat"><b id="stM">0</b>Manut.</div><div class="stat"><b id="stA">0</b>Abertas</div><div class="stat"><b id="stC">0</b>Concluídas</div></div>
+<div class="tools"><input id="busca" placeholder="Pesquisar" oninput="render()"><select id="fDestino" onchange="render()"><option value="">Todos destinos</option><option>Engenharia de Processo</option><option>SGQ</option><option>Manutenção</option></select><select id="fArea" onchange="render()"><option value="">Todas áreas</option><option>Fábrica</option><option>ADM</option><option>Outro</option></select><select id="fStatus" onchange="render()"><option value="">Todos status</option><option>Recebido</option><option>Em análise</option><option>Aguardando informação</option><option>Encaminhado</option><option>Em execução</option><option>Concluído</option><option>Reprovado</option><option>Cancelado</option></select></div>
+<button class="success" onclick="exportCSV()">Exportar CSV</button> <button class="secondary" onclick="load()">Atualizar</button>
+<div class="table" id="table"></div>
+</div>
+</section>
+</main>
 
-      <div class="option-grid">
-        <div class="card option-card" onclick="showScreen('form')">
-          <div class="card-number green">01</div>
-          <h3>Abrir solicitação</h3>
-          <p>Para sugerir uma melhoria ou pedir correção de algo que esteja prejudicando o processo.</p>
-          <ul>
-            <li>Mesa da pré-formatação quebrada</li>
-            <li>Posto sem identificação adequada</li>
-            <li>Organização que atrapalha o trabalho</li>
-            <li>Melhoria de fluxo, padrão ou ergonomia</li>
-          </ul>
-          <div class="card-action"><span>Abrir formulário</span><span>→</span></div>
-        </div>
+<div class="modal" id="modal" onclick="if(event.target.id==='modal')hidePhoto()"><div><div class="top"><h3>Foto</h3><button class="secondary" onclick="hidePhoto()">Fechar</button></div><img id="modalImg"></div></div>
 
-        <div class="card option-card" onclick="showScreen('panel')">
-          <div class="card-number">02</div>
-          <h3>Painel de acompanhamento</h3>
-          <p>Para consultar as solicitações abertas separadas por Engenharia de Processo, SGQ e Manutenção.</p>
-          <ul>
-            <li>Filtro por destino</li>
-            <li>Data e dia de abertura</li>
-            <li>Histórico e exportação CSV</li>
-          </ul>
-          <div class="card-action"><span>Abrir painel</span><span>→</span></div>
-        </div>
-      </div>
-
-      <div class="card examples">
-        <h3>Exemplos do que pode ser registrado</h3>
-        <div class="example-grid">
-          <div class="example-box"><strong>Manutenção</strong><span>“Mesa da pré-formatação está quebrada e dificulta a atividade.”</span></div>
-          <div class="example-box"><strong>Eng. Processo</strong><span>“Criar suporte para separar materiais e evitar mistura no processo.”</span></div>
-          <div class="example-box"><strong>SGQ</strong><span>“Instrução ou identificação do processo está gerando dúvida.”</span></div>
-          <div class="example-box"><strong>Organização</strong><span>“Bancada está sem padrão e atrapalha a rotina do setor.”</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="form" class="screen">
-      <div class="topbar">
-        <div class="breadcrumb">Menu principal / <strong>Abrir solicitação</strong></div>
-        <button class="secondary" onclick="showScreen('home')">Voltar ao menu</button>
-      </div>
-
-      <div class="content-grid">
-        <div class="card">
-          <div class="title"><h2>Formulário de solicitação</h2><small>Preencha com clareza para facilitar a análise e tratativa.</small></div>
-          <form id="formSolicitacao">
-            <div class="three">
-              <div class="field"><label>Data de abertura</label><input id="dataAbertura" readonly></div>
-              <div class="field"><label>Dia da abertura</label><input id="diaAbertura" readonly></div>
-              <div class="field"><label>Hora de abertura</label><input id="horaAbertura" readonly></div>
-            </div>
-
-            <div class="two">
-              <div class="field"><label>Nome do solicitante</label><input id="nome" placeholder="Ex.: João Silva"></div>
-              <div class="field"><label>Área <span class="req">*</span></label><select id="area" required><option value="">Selecione...</option><option>Fábrica</option><option>ADM</option><option>Outro</option></select></div>
-            </div>
-
-            <div class="two">
-              <div class="field"><label>Setor / processo / local informado <span class="req">*</span></label><input id="setorLivre" required placeholder="Ex.: Pré-formatação, PTH, sala ADM..."></div>
-              <div class="field"><label>Direcionar para <span class="req">*</span></label><select id="destino" required><option value="">Selecione...</option><option>Engenharia de Processo</option><option>SGQ</option><option>Manutenção</option></select></div>
-            </div>
-
-            <div class="three">
-              <div class="field"><label>Tipo <span class="req">*</span></label><select id="tipo" required><option value="">Selecione...</option><option>Correção / arrumar algo</option><option>Melhoria de processo</option><option>Organização / 5S</option><option>Identificação / padronização</option><option>Ergonomia</option><option>Segurança preventiva</option><option>Outro</option></select></div>
-              <div class="field"><label>Prioridade</label><select id="prioridade"><option>Baixa</option><option selected>Média</option><option>Alta</option></select></div>
-              <div class="field"><label>Local exato <span class="req">*</span></label><input id="local" required placeholder="Ex.: mesa da pré-formatação"></div>
-            </div>
-
-            <div class="field"><label>Título <span class="req">*</span></label><input id="titulo" required placeholder="Ex.: Mesa da pré-formatação quebrada"></div>
-            <div class="field"><label>O que foi observado? <span class="req">*</span></label><textarea id="problema" required placeholder="Descreva o que precisa ser arrumado ou melhorado..."></textarea></div>
-            <div class="field"><label>O que você sugere ou solicita? <span class="req">*</span></label><textarea id="solicitacao" required placeholder="Ex.: Solicito avaliação e ajuste da mesa..."></textarea></div>
-
-            <div class="field">
-              <label>Impacto percebido</label>
-              <div class="checks">
-                <label class="check"><input type="checkbox" name="impacto" value="Dificulta o processo"> Dificulta o processo</label>
-                <label class="check"><input type="checkbox" name="impacto" value="Gera perda de tempo"> Gera perda de tempo</label>
-                <label class="check"><input type="checkbox" name="impacto" value="Pode gerar erro"> Pode gerar erro</label>
-                <label class="check"><input type="checkbox" name="impacto" value="Afeta organização"> Afeta organização</label>
-                <label class="check"><input type="checkbox" name="impacto" value="Afeta ergonomia"> Afeta ergonomia</label>
-                <label class="check"><input type="checkbox" name="impacto" value="Risco preventivo"> Risco preventivo</label>
-              </div>
-            </div>
-
-            <div class="field"><label>Foto / evidência</label><input id="foto" type="file" accept="image/*"><img id="preview" class="preview"></div>
-            <div class="field"><label>Observações adicionais</label><textarea id="obs" placeholder="Turno, frequência, detalhe extra..."></textarea></div>
-            <div class="buttons"><button type="submit">Registrar solicitação</button><button type="reset" class="secondary">Limpar</button></div>
-          </form>
-          <div class="note">Para enviar e-mail automaticamente, configure a URL do Power Automate no bloco ao lado. Sem webhook, o registro fica salvo apenas no painel local.</div>
-        </div>
-
-        <div class="card">
-          <div class="title"><h2>Power Automate / Webhook</h2><small>Cole aqui a URL HTTP POST do fluxo.</small></div>
-          <form onsubmit="salvarWebhook(event)">
-            <div class="field"><label>URL do Power Automate</label><input id="webhookUrl" type="url" placeholder="https://prod-...logic.azure.com/..."></div>
-            <div class="buttons"><button type="submit">Salvar configuração</button><button type="button" class="secondary" onclick="testarWebhook()">Testar envio</button><button type="button" class="danger" onclick="limparWebhook()">Limpar</button></div>
-          </form>
-          <div class="help">
-            <div class="help-box"><strong>Eng. Processo</strong>Melhoria de fluxo, método, organização de processo, ergonomia e padrão operacional.</div>
-            <div class="help-box"><strong>SGQ</strong>Identificação, instrução, padronização, qualidade, controle e documentação.</div>
-            <div class="help-box"><strong>Manutenção</strong>Correção física, mesa, bancada, suporte, estrutura ou ambiente.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="panel" class="screen">
-      <div class="topbar">
-        <div class="breadcrumb">Menu principal / <strong>Painel de acompanhamento</strong></div>
-        <button class="secondary" onclick="showScreen('home')">Voltar ao menu</button>
-      </div>
-
-      <div class="card">
-        <div class="title"><h2>Painel de solicitações</h2><small>Registros separados por Engenharia de Processo, SGQ e Manutenção.</small></div>
-        <div class="stats">
-          <div class="stat"><strong id="stTotal">0</strong><span>Total</span></div>
-          <div class="stat"><strong id="stEng">0</strong><span>Eng. Processo</span></div>
-          <div class="stat"><strong id="stSgq">0</strong><span>SGQ</span></div>
-          <div class="stat"><strong id="stMan">0</strong><span>Manutenção</span></div>
-          <div class="stat"><strong id="stAberto">0</strong><span>Aberto/análise</span></div>
-          <div class="stat"><strong id="stConcluido">0</strong><span>Concluídos</span></div>
-        </div>
-        <div class="toolbar">
-          <input id="busca" placeholder="Pesquisar..." oninput="render()">
-          <select id="fDestino" onchange="render()"><option value="">Todos destinos</option><option>Engenharia de Processo</option><option>SGQ</option><option>Manutenção</option></select>
-          <select id="fArea" onchange="render()"><option value="">Todas áreas</option><option>Fábrica</option><option>ADM</option><option>Outro</option></select>
-          <select id="fStatus" onchange="render()"><option value="">Todos status</option><option>Recebido</option><option>Em análise</option><option>Aguardando informação</option><option>Encaminhado</option><option>Em execução</option><option>Concluído</option><option>Reprovado</option><option>Cancelado</option></select>
-        </div>
-        <div class="buttons" style="padding:0 20px 18px"><button class="success" onclick="exportCSV()">Exportar CSV</button><button class="secondary" onclick="exportJSON()">Backup JSON</button><button class="danger" onclick="clearAll()">Limpar tudo</button></div>
-        <div class="table-wrap" id="tableArea"></div>
-      </div>
-    </section>
-  </main>
-
-  <div class="modal" id="modal" onclick="if(event.target.id==='modal')hidePhoto()">
-    <div class="modalbox">
-      <div class="topbar"><h3>Foto / evidência</h3><button class="secondary" onclick="hidePhoto()">Fechar</button></div>
-      <img id="modalImg" alt="Foto da solicitação">
-    </div>
-  </div>
-
-  <script>
-    const STORAGE_KEY='solicitacoes_melhoria_correcao_v2';
-    const WEBHOOK_KEY='solicitacoes_webhook_power_automate';
-    const EMAILS=['trainee.processo@globaleletronics.ind.br','luiggi.mocellin@globaleletro.onmicrosoft.com'];
-    const STATUS=['Recebido','Em análise','Aguardando informação','Encaminhado','Em execução','Concluído','Reprovado','Cancelado'];
-    let registros=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
-    let fotoAtual='';
-
-    function dataObj(){
-      const d=new Date();
-      const dia=d.toLocaleDateString('pt-BR',{weekday:'long'});
-      return{dataAbertura:d.toLocaleDateString('pt-BR'),diaAbertura:dia.charAt(0).toUpperCase()+dia.slice(1),horaAbertura:d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),iso:d.toISOString()};
-    }
-
-    function preencherData(){
-      const d=dataObj();
-      ['dataAbertura','diaAbertura','horaAbertura'].forEach(k=>{const el=document.getElementById(k);if(el)el.value=d[k];});
-    }
-
-    function showScreen(id){
-      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      window.scrollTo({top:0,behavior:'smooth'});
-      if(id==='form')preencherData();
-      if(id==='panel')render();
-    }
-
-    function val(id){return document.getElementById(id).value.trim();}
-    function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(registros));render();}
-
-    async function readImage(file){
-      if(!file)return'';
-      return new Promise(res=>{
-        const r=new FileReader();
-        r.onload=e=>{
-          const img=new Image();
-          img.onload=()=>{
-            let w=img.width,h=img.height,max=1280;
-            if(w>h&&w>max){h=Math.round(h*max/w);w=max}else if(h>=w&&h>max){w=Math.round(w*max/h);h=max}
-            const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
-            res(c.toDataURL('image/jpeg',.82));
-          };
-          img.src=e.target.result;
-        };
-        r.readAsDataURL(file);
-      });
-    }
-
-    document.getElementById('foto').addEventListener('change',async e=>{
-      fotoAtual=await readImage(e.target.files[0]);
-      const p=document.getElementById('preview');
-      if(fotoAtual){p.src=fotoAtual;p.style.display='block'}else{p.style.display='none';p.src=''}
-    });
-
-    document.getElementById('formSolicitacao').addEventListener('submit',async e=>{
-      e.preventDefault();
-      const btn=e.target.querySelector('button[type=submit]');
-      const old=btn.textContent;
-      btn.disabled=true;btn.textContent='Registrando...';
-      const d=dataObj();
-      const impactos=[...document.querySelectorAll('input[name=impacto]:checked')].map(x=>x.value);
-      const r={id:Date.now(),...d,data:`${d.dataAbertura} - ${d.diaAbertura} - ${d.horaAbertura}`,nome:val('nome'),area:val('area'),setorLivre:val('setorLivre'),destino:val('destino'),tipo:val('tipo'),prioridade:val('prioridade'),local:val('local'),titulo:val('titulo'),problema:val('problema'),solicitacao:val('solicitacao'),impacto:impactos.join(', '),foto:fotoAtual,obs:val('obs'),status:'Recebido',emailStatus:'Não enviado'};
-      registros.unshift(r);save();
-      try{
-        const ok=await enviarWebhook(r);
-        if(ok){r.emailStatus='Enviado';save();alert('Solicitação registrada e enviada via Power Automate.')}else alert('Solicitação registrada. E-mail não enviado porque o webhook não está configurado.');
-      }catch(err){
-        console.error(err);r.emailStatus='Falha no envio';save();alert('Solicitação salva, mas falhou o envio. Verifique a URL do Power Automate.');
-      }finally{
-        e.target.reset();fotoAtual='';document.getElementById('preview').style.display='none';preencherData();btn.disabled=false;btn.textContent=old;
-      }
-    });
-
-    document.getElementById('formSolicitacao').addEventListener('reset',()=>setTimeout(preencherData,0));
-
-    function salvarWebhook(e){
-      e.preventDefault();
-      const url=val('webhookUrl');
-      if(!url)return alert('Cole a URL do Power Automate.');
-      localStorage.setItem(WEBHOOK_KEY,url);
-      alert('Webhook salvo.');
-    }
-
-    function limparWebhook(){
-      localStorage.removeItem(WEBHOOK_KEY);
-      document.getElementById('webhookUrl').value='';
-      alert('Webhook removido.');
-    }
-
-    async function testarWebhook(){
-      const url=localStorage.getItem(WEBHOOK_KEY)||val('webhookUrl');
-      if(!url)return alert('Configure a URL primeiro.');
-      const t={teste:true,emailsDestino:EMAILS,assunto:'Teste - Canal de Solicitação',dataAbertura:dataObj().dataAbertura,diaAbertura:dataObj().diaAbertura,horaAbertura:dataObj().horaAbertura,corpoEmailTexto:'Teste de envio do Canal de Solicitação de Melhoria e Correção.'};
-      const resp=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(t)});
-      if(!resp.ok)return alert('Falha no teste. HTTP '+resp.status);
-      alert('Teste enviado. Confira o e-mail.');
-    }
-
-    async function enviarWebhook(r){
-      const url=localStorage.getItem(WEBHOOK_KEY);
-      if(!url)return false;
-      const payload={origem:'Canal de Solicitação de Melhoria e Correção',emailsDestino:EMAILS,assunto:`Solicitação de melhoria/correção - ${r.destino} - ${r.titulo}`,dataAbertura:r.dataAbertura,diaAbertura:r.diaAbertura,horaAbertura:r.horaAbertura,solicitante:r.nome||'Não informado',area:r.area,setorProcessoLocalInformado:r.setorLivre,destino:r.destino,tipoSolicitacao:r.tipo,prioridade:r.prioridade,localExato:r.local,titulo:r.titulo,problemaObservado:r.problema,solicitacaoSugestao:r.solicitacao,impactoPercebido:r.impacto||'Não informado',observacoes:r.obs||'Não informado',statusInicial:r.status,possuiFoto:r.foto?'Sim':'Não',fotoBase64:r.foto||'',corpoEmailTexto:mensagemTexto(r),corpoEmailHtml:mensagemHtml(r)};
-      const resp=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-      if(!resp.ok)throw new Error('HTTP '+resp.status);
-      return true;
-    }
-
-    function mensagemTexto(r){
-      return[`Olá,`,'','Uma nova solicitação de melhoria/correção foi registrada.','','DADOS DE ABERTURA',`Data: ${r.dataAbertura}`,`Dia: ${r.diaAbertura}`,`Hora: ${r.horaAbertura}`,'','DADOS DA SOLICITAÇÃO',`Solicitante: ${r.nome||'Não informado'}`,`Área: ${r.area}`,`Setor/processo/local: ${r.setorLivre}`,`Direcionado para: ${r.destino}`,`Tipo: ${r.tipo}`,`Prioridade: ${r.prioridade}`,`Local exato: ${r.local}`,'',`Título: ${r.titulo}`,'','O que foi observado:',r.problema,'','O que foi solicitado/sugerido:',r.solicitacao,'',`Impacto: ${r.impacto||'Não informado'}`,`Observações: ${r.obs||'Não informado'}`,`Possui foto: ${r.foto?'Sim':'Não'}`,'','Status inicial: Recebido'].join('\n');
-    }
-
-    function mensagemHtml(r){
-      return `<h2>Nova solicitação de melhoria/correção</h2><table border="1" cellspacing="0" cellpadding="6"><tr><td><b>Data</b></td><td>${esc(r.dataAbertura)}</td></tr><tr><td><b>Dia</b></td><td>${esc(r.diaAbertura)}</td></tr><tr><td><b>Hora</b></td><td>${esc(r.horaAbertura)}</td></tr><tr><td><b>Solicitante</b></td><td>${esc(r.nome||'Não informado')}</td></tr><tr><td><b>Área</b></td><td>${esc(r.area)}</td></tr><tr><td><b>Setor/processo/local</b></td><td>${esc(r.setorLivre)}</td></tr><tr><td><b>Destino</b></td><td>${esc(r.destino)}</td></tr><tr><td><b>Tipo</b></td><td>${esc(r.tipo)}</td></tr><tr><td><b>Prioridade</b></td><td>${esc(r.prioridade)}</td></tr><tr><td><b>Local</b></td><td>${esc(r.local)}</td></tr><tr><td><b>Título</b></td><td>${esc(r.titulo)}</td></tr><tr><td><b>Problema</b></td><td>${esc(r.problema)}</td></tr><tr><td><b>Solicitação</b></td><td>${esc(r.solicitacao)}</td></tr><tr><td><b>Impacto</b></td><td>${esc(r.impacto||'Não informado')}</td></tr><tr><td><b>Observações</b></td><td>${esc(r.obs||'Não informado')}</td></tr><tr><td><b>Possui foto</b></td><td>${r.foto?'Sim':'Não'}</td></tr></table>`;
-    }
-
-    function render(){
-      document.getElementById('stTotal').textContent=registros.length;
-      document.getElementById('stEng').textContent=registros.filter(r=>r.destino==='Engenharia de Processo').length;
-      document.getElementById('stSgq').textContent=registros.filter(r=>r.destino==='SGQ').length;
-      document.getElementById('stMan').textContent=registros.filter(r=>r.destino==='Manutenção').length;
-      document.getElementById('stAberto').textContent=registros.filter(r=>['Recebido','Em análise','Aguardando informação','Encaminhado','Em execução'].includes(r.status)).length;
-      document.getElementById('stConcluido').textContent=registros.filter(r=>r.status==='Concluído').length;
-      const q=val('busca').toLowerCase(),dest=val('fDestino'),area=val('fArea'),status=val('fStatus');
-      const arr=registros.filter(r=>(!q||Object.values(r).join(' ').toLowerCase().includes(q))&&(!dest||r.destino===dest)&&(!area||r.area===area)&&(!status||r.status===status));
-      const box=document.getElementById('tableArea');
-      if(!arr.length){box.innerHTML='<div class="empty">Nenhuma solicitação encontrada.</div>';return}
-      box.innerHTML=`<table><thead><tr><th>Abertura</th><th>Destino</th><th>Área / setor</th><th>Tipo</th><th>Local</th><th>Solicitação</th><th>Status</th><th>E-mail</th><th>Foto</th><th>Ações</th></tr></thead><tbody>${arr.map(r=>`<tr><td>${esc(r.dataAbertura||'-')}<span class="mini">${esc(r.diaAbertura||'-')}</span><span class="mini">${esc(r.horaAbertura||'-')}</span><span class="mini">Por: ${esc(r.nome||'Não informado')}</span></td><td><span class="tag ${tagDestino(r.destino)}">${esc(r.destino)}</span></td><td>${esc(r.area)}<span class="mini">${esc(r.setorLivre)}</span></td><td><span class="tag">${esc(r.tipo)}</span><span class="mini">Prioridade: ${esc(r.prioridade)}</span></td><td>${esc(r.local)}</td><td><b>${esc(r.titulo)}</b><span class="mini">${esc(r.problema)}</span><span class="mini"><b>Solicitado:</b> ${esc(r.solicitacao)}</span></td><td><select onchange="updateStatus(${r.id},this.value)">${STATUS.map(s=>`<option ${r.status===s?'selected':''}>${s}</option>`).join('')}</select></td><td>${esc(r.emailStatus||'Não enviado')}</td><td>${r.foto?`<a class="photo" href="#" onclick="showPhoto(${r.id})">Ver foto</a>`:'-'}</td><td><button class="danger" onclick="del(${r.id})">Excluir</button></td></tr>`).join('')}</tbody></table>`;
-    }
-
-    function updateStatus(id,s){registros=registros.map(r=>{if(r.id===id)r.status=s;return r});save()}
-    function del(id){if(confirm('Excluir esta solicitação?')){registros=registros.filter(r=>r.id!==id);save()}}
-    function showPhoto(id){const r=registros.find(x=>x.id===id);if(!r||!r.foto)return;document.getElementById('modalImg').src=r.foto;document.getElementById('modal').style.display='flex'}
-    function hidePhoto(){document.getElementById('modal').style.display='none';document.getElementById('modalImg').src=''}
-
-    function exportCSV(){
-      if(!registros.length)return alert('Não há dados.');
-      const h=['Data_Abertura','Dia_Abertura','Hora_Abertura','Nome','Area','Setor_Local','Destino','Tipo','Prioridade','Local','Titulo','Problema','Solicitacao','Impacto','Status','Email_Status','Obs'];
-      const rows=registros.map(r=>[r.dataAbertura,r.diaAbertura,r.horaAbertura,r.nome,r.area,r.setorLivre,r.destino,r.tipo,r.prioridade,r.local,r.titulo,r.problema,r.solicitacao,r.impacto,r.status,r.emailStatus,r.obs]);
-      download([h,...rows].map(row=>row.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(';')).join('\n'),'solicitacoes.csv','text/csv;charset=utf-8;');
-    }
-
-    function exportJSON(){download(JSON.stringify(registros,null,2),'backup_solicitacoes.json','application/json')}
-    function clearAll(){if(confirm('Apagar todos os registros deste navegador?')){registros=[];save()}}
-    function download(content,name,type){const b=new Blob([content],{type});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u)}
-    function tagDestino(d){return d==='SGQ'?'sgq':d==='Manutenção'?'man':'eng'}
-    function esc(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
-
-    function carregar(){preencherData();const u=localStorage.getItem(WEBHOOK_KEY);if(u)document.getElementById('webhookUrl').value=u;render()}
-    carregar();
-  </script>
+<script>
+const API='https://quqqcudiyhajbmtrebvr.functions.supabase.co/solicitacoes-api';
+const STATUS=['Recebido','Em análise','Aguardando informação','Encaminhado','Em execução','Concluído','Reprovado','Cancelado'];
+let regs=[],fotoFile=null;
+function now(){const d=new Date(),w=d.toLocaleDateString('pt-BR',{weekday:'long'});return{data_abertura:d.toLocaleDateString('pt-BR'),dia_abertura:w.charAt(0).toUpperCase()+w.slice(1),hora_abertura:d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}}
+function setDate(){const n=now();data.value=n.data_abertura;dia.value=n.dia_abertura;hora.value=n.hora_abertura}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='form')setDate();if(id==='panel')load()}
+function val(id){return document.getElementById(id).value.trim()}
+setDate();
+foto.onchange=e=>{fotoFile=e.target.files[0]||null;if(fotoFile){preview.src=URL.createObjectURL(fotoFile);preview.style.display='block'}else{preview.style.display='none'}};
+frm.onreset=()=>setTimeout(setDate,0);
+frm.onsubmit=async e=>{
+  e.preventDefault();
+  const b=e.submitter,old=b.textContent;
+  b.disabled=true;b.textContent='Salvando...';
+  try{
+    const n=now(),impacto=[...document.querySelectorAll('input[name=impacto]:checked')].map(x=>x.value).join(', ');
+    const body={...n,nome:val('nome'),area:val('area'),setor_local:val('setor'),destino:val('destino'),tipo_solicitacao:val('tipo'),prioridade:val('prioridade'),local_exato:val('local'),titulo:val('titulo'),problema:val('problema'),solicitacao:val('solicitacao'),impacto,observacoes:val('obs'),status:'Recebido'};
+    if(fotoFile)body.foto_base64=await b64(fotoFile);
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),j=await r.json();
+    if(!r.ok)throw new Error(j.error||'erro');
+    alert('Solicitação registrada com sucesso.');
+    frm.reset();preview.style.display='none';fotoFile=null;setDate();
+  }catch(err){alert('Falha: '+err.message)}
+  finally{b.disabled=false;b.textContent=old}
+};
+function b64(f){return new Promise((ok,er)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=er;r.readAsDataURL(f)})}
+async function load(){table.innerHTML='<div class="note">Carregando...</div>';try{const r=await fetch(API),j=await r.json();if(!r.ok)throw new Error(j.error||'erro');regs=j.data||[];render()}catch(e){table.innerHTML='<div class="note">Erro: '+esc(e.message)+'</div>'}}
+function render(){
+  stT.textContent=regs.length;stE.textContent=regs.filter(x=>x.destino==='Engenharia de Processo').length;stS.textContent=regs.filter(x=>x.destino==='SGQ').length;stM.textContent=regs.filter(x=>x.destino==='Manutenção').length;stA.textContent=regs.filter(x=>['Recebido','Em análise','Aguardando informação','Encaminhado','Em execução'].includes(x.status)).length;stC.textContent=regs.filter(x=>x.status==='Concluído').length;
+  const q=val('busca').toLowerCase(),d=val('fDestino'),a=val('fArea'),s=val('fStatus');
+  const arr=regs.filter(x=>(!q||Object.values(x).join(' ').toLowerCase().includes(q))&&(!d||x.destino===d)&&(!a||x.area===a)&&(!s||x.status===s));
+  if(!arr.length){table.innerHTML='<div class="note">Nenhuma solicitação encontrada.</div>';return}
+  table.innerHTML='<table><thead><tr><th>Abertura</th><th>Destino</th><th>Área / setor</th><th>Tipo</th><th>Local</th><th>Solicitação</th><th>Status</th><th>Foto</th></tr></thead><tbody>'+arr.map(x=>`<tr><td>${esc(x.data_abertura||'-')}<span class="mini">${esc(x.dia_abertura||'-')}</span><span class="mini">${esc(x.hora_abertura||'-')}</span><span class="mini">Por: ${esc(x.nome||'Não informado')}</span></td><td><span class="tag">${esc(x.destino)}</span></td><td>${esc(x.area)}<span class="mini">${esc(x.setor_local)}</span></td><td>${esc(x.tipo_solicitacao)}<span class="mini">Prioridade: ${esc(x.prioridade)}</span></td><td>${esc(x.local_exato)}</td><td><b>${esc(x.titulo)}</b><span class="mini">${esc(x.problema)}</span><span class="mini"><b>Solicitado:</b> ${esc(x.solicitacao)}</span></td><td><select onchange="upd('${x.id}',this.value)">${STATUS.map(s=>`<option ${x.status===s?'selected':''}>${s}</option>`).join('')}</select></td><td>${x.foto_base64?`<a href="#" class="photo" onclick="showPhoto('${x.id}')">Ver foto</a>`:'-'}</td></tr>`).join('')+'</tbody></table>'
+}
+async function upd(id,status){const r=await fetch(API,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,status})});if(!r.ok){alert('Falha ao atualizar');load();return}const x=regs.find(y=>y.id===id);if(x)x.status=status;render()}
+function showPhoto(id){const x=regs.find(y=>y.id===id);if(!x?.foto_base64)return;modalImg.src=x.foto_base64;modal.style.display='flex'}
+function hidePhoto(){modal.style.display='none';modalImg.src=''}
+function exportCSV(){const h=['Data','Dia','Hora','Nome','Area','Setor','Destino','Tipo','Prioridade','Local','Titulo','Problema','Solicitacao','Impacto','Status','Obs'];const rows=regs.map(x=>[x.data_abertura,x.dia_abertura,x.hora_abertura,x.nome,x.area,x.setor_local,x.destino,x.tipo_solicitacao,x.prioridade,x.local_exato,x.titulo,x.problema,x.solicitacao,x.impacto,x.status,x.observacoes]);const csv=[h,...rows].map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(';')).join('\n');const blob=new Blob([csv],{type:'text/csv'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='solicitacoes.csv';a.click();URL.revokeObjectURL(u)}
+function esc(v){return String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+load();
+</script>
 </body>
 </html>
