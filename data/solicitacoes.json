@@ -19,8 +19,8 @@
     "impacto": "Dificulta o processo",
     "observacoes": "teste",
     "status": "Recebido",
-    "email_status": "Processando envio",
-    "github_status": "Processando sincronização",
+    "email_status": "Falha: Resend em modo teste permite enviar apenas para kbdevit1@gmail.com",
+    "github_status": "Sincronizado no GitHub JSON",
     "possui_foto": false,
     "foto_base64": null
   }
