@@ -1,6 +1,6 @@
 name: Fix access request email flow
 
-on:
+'on':
   push:
     branches: [main]
     paths:
@@ -18,25 +18,14 @@ jobs:
       - name: Patch smc-auth.js
         run: |
           python - <<'PY'
+          import re
           from pathlib import Path
+
           p = Path('smc-auth.js')
           text = p.read_text(encoding='utf-8')
-          replacements = [
-              ('''function smcNormalizarUsuario(raw){
-  let value = String(raw || "").trim().toLowerCase().replace(/\s+/g, "");
-  if (!value) return { ok:false, message:"Informe seu e-mail corporativo." };
-  if (value.includes("@")) {
-    const [local, ...domainParts] = value.split("@");
-    const domain = "@" + domainParts.join("@");
-    if (domain !== SMC_DOMAIN) {
-      return { ok:false, message:"Acesso permitido apenas para e-mails corporativos da Global Eletronics." };
-    }
-    value = local;
-  }
-  if (!/^[a-z0-9._-]{2,80}$/.test(value)) return { ok:false, message:"Usuário corporativo inválido." };
-  return { ok:true, usuario:value, email:value + SMC_DOMAIN };
-}''', '''function smcNormalizarUsuario(raw){
-  let value = String(raw || "").trim().toLowerCase().replace(/\s+/g, "");
+
+          new_func = '''function smcNormalizarUsuario(raw){
+  let value = String(raw || "").trim().toLowerCase().replace(/\\s+/g, "");
   if (!value) return { ok:false, message:"Informe seu e-mail corporativo." };
   if (!value.includes("@")) {
     return { ok:false, message:"Informe o e-mail corporativo completo, incluindo @globaleletronics.ind.br." };
@@ -51,16 +40,25 @@ jobs:
   }
   if (!/^[a-z0-9._-]{2,80}$/.test(local)) return { ok:false, message:"E-mail corporativo inválido." };
   return { ok:true, usuario:local, email:local + SMC_DOMAIN };
-}'''),
-              ('''<div class="smc-auth-panel"><h3>Entrar no SMC</h3><p>Digite seu usuário corporativo ou e-mail completo. O sistema bloqueia domínio pessoal.</p><div class="smc-auth-form"><div class="smc-auth-field"><label for="smcLoginUsuario">Usuário ou e-mail corporativo</label><input id="smcLoginUsuario" type="text" placeholder="nome.sobrenome" autocomplete="off" autocapitalize="none" spellcheck="false"><small>Exemplo: nome.sobrenome ou nome.sobrenome${SMC_DOMAIN}</small></div><div class="smc-auth-field"><label for="smcLoginSenha">Senha</label><input id="smcLoginSenha" type="password" placeholder="Digite sua senha" autocomplete="current-password"></div><div class="smc-auth-actions"><button type="button" id="smcLoginBtn" class="smc-login-btn">Entrar</button><button type="button" id="smcCreateBtn" class="smc-create-btn">Solicitar acesso</button></div><button type="button" id="smcPublicBtn" class="smc-public-btn">Continuar sem login</button><div class="smc-auth-msg" id="smcLoginMsg"></div><div class="smc-auth-note"><strong>Segurança:</strong> e-mail corporativo não aprovado não entra direto. Ele fica aguardando aprovação de admin/master.</div></div></div>''', '''<div class="smc-auth-panel"><h3>Entrar no SMC</h3><p>Digite seu e-mail corporativo completo. O sistema bloqueia domínio pessoal.</p><div class="smc-auth-form"><div class="smc-auth-field"><label for="smcLoginUsuario">E-mail corporativo</label><input id="smcLoginUsuario" type="email" placeholder="nome.sobrenome@globaleletronics.ind.br" autocomplete="email" autocapitalize="none" spellcheck="false"><small>Use o e-mail corporativo completo.</small></div><div class="smc-auth-field"><label for="smcLoginSenha">Senha</label><input id="smcLoginSenha" type="password" placeholder="Digite sua senha" autocomplete="current-password"></div><div class="smc-auth-actions"><button type="button" id="smcLoginBtn" class="smc-login-btn">Entrar</button><button type="button" id="smcCreateBtn" class="smc-create-btn">Solicitar acesso</button></div><button type="button" id="smcPublicBtn" class="smc-public-btn">Continuar sem login</button><div class="smc-auth-msg" id="smcLoginMsg"></div><div class="smc-auth-note"><strong>Segurança:</strong> e-mail corporativo não aprovado não entra direto. Ele fica aguardando aprovação de admin/master.</div></div></div>'''),
-              ('const usuario = normalized.ok ? normalized.usuario : "";', 'const usuario = normalized.ok ? normalized.email : "";'),
-              ('''<div class="smc-spa-field"><label for="smcCadastroUsuario">Usuário ou e-mail corporativo</label><input id="smcCadastroUsuario" type="text" value="${smcEsc(usuario)}" placeholder="nome.sobrenome" autocomplete="off" autocapitalize="none" spellcheck="false"><small>O sistema aplicará ${SMC_DOMAIN} se você digitar apenas o usuário.</small></div>''', '''<div class="smc-spa-field"><label for="smcCadastroUsuario">E-mail corporativo</label><input id="smcCadastroUsuario" type="email" value="${smcEsc(usuario)}" placeholder="nome.sobrenome@globaleletronics.ind.br" autocomplete="email" autocapitalize="none" spellcheck="false"><small>Digite o e-mail corporativo completo. Não use apenas o usuário.</small></div>'''),
-              ('const { error: requestError } = await smcAuthClient.from("access_requests").upsert(payload, { onConflict:"email" });', 'const { error: requestError } = await smcAuthClient.from("access_requests").insert(payload);'),
-          ]
-          for old, new in replacements:
-              if old not in text:
-                  raise SystemExit(f'Missing expected block: {old[:80]!r}')
+}'''
+          text, count = re.subn(r'function smcNormalizarUsuario\(raw\)\{.*?\n\}\n\nfunction smcMensagemAuth', new_func + '\n\nfunction smcMensagemAuth', text, count=1, flags=re.S)
+          if count != 1:
+              raise SystemExit('smcNormalizarUsuario block not found')
+
+          replacements = {
+            'Digite seu usuário corporativo ou e-mail completo. O sistema bloqueia domínio pessoal.': 'Digite seu e-mail corporativo completo. O sistema bloqueia domínio pessoal.',
+            'Usuário ou e-mail corporativo</label><input id="smcLoginUsuario" type="text" placeholder="nome.sobrenome" autocomplete="off"': 'E-mail corporativo</label><input id="smcLoginUsuario" type="email" placeholder="nome.sobrenome@globaleletronics.ind.br" autocomplete="email"',
+            'Exemplo: nome.sobrenome ou nome.sobrenome${SMC_DOMAIN}': 'Use o e-mail corporativo completo.',
+            'const usuario = normalized.ok ? normalized.usuario : "";': 'const usuario = normalized.ok ? normalized.email : "";',
+            'Usuário ou e-mail corporativo</label><input id="smcCadastroUsuario" type="text"': 'E-mail corporativo</label><input id="smcCadastroUsuario" type="email"',
+            'placeholder="nome.sobrenome" autocomplete="off" autocapitalize="none" spellcheck="false"><small>O sistema aplicará ${SMC_DOMAIN} se você digitar apenas o usuário.</small>': 'placeholder="nome.sobrenome@globaleletronics.ind.br" autocomplete="email" autocapitalize="none" spellcheck="false"><small>Digite o e-mail corporativo completo. Não use apenas o usuário.</small>',
+            'const { error: requestError } = await smcAuthClient.from("access_requests").upsert(payload, { onConflict:"email" });': 'const { error: requestError } = await smcAuthClient.from("access_requests").insert(payload);',
+          }
+          for old, new in replacements.items():
+              if old not in text and new not in text:
+                  raise SystemExit(f'Missing expected text: {old[:90]}')
               text = text.replace(old, new, 1)
+
           p.write_text(text, encoding='utf-8')
           PY
       - name: Validate JavaScript syntax
