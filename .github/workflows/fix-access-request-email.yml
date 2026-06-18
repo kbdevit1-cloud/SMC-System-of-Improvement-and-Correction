@@ -61,7 +61,7 @@ jobs:
                   '  return { ok:true, usuario:local, email:local + SMC_DOMAIN };',
                   '}'
               ])
-              text, count = re.subn(r'function smcNormalizarUsuario\(raw\)\{.*?\n\}\n\nfunction smcMensagemAuth', new_func + '\n\nfunction smcMensagemAuth', text, count=1, flags=re.S)
+              text, count = re.subn(r'function smcNormalizarUsuario\(raw\)\{.*?\n\}\n\nfunction smcMensagemAuth', lambda _m: new_func + '\n\nfunction smcMensagemAuth', text, count=1, flags=re.S)
               if count != 1:
                   raise RuntimeError('normalizer block not replaced')
 
@@ -90,7 +90,6 @@ jobs:
           Path('patch-status.txt').write_text('ok' if ok else 'failed', encoding='utf-8')
           PY
       - name: Validate JavaScript syntax
-        if: ${{ hashFiles('patch-status.txt') != '' }}
         run: |
           if [ "$(cat patch-status.txt)" = "ok" ]; then
             node --check smc-auth.js
@@ -100,8 +99,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if [ "$(cat patch-status.txt)" = "ok" ]; then
-            git rm --ignore-unmatch .github/workflows/fix-access-request-email.yml
-            git add smc-auth.js workflow-debug.txt patch-status.txt
+            git rm --ignore-unmatch .github/workflows/fix-access-request-email.yml workflow-debug.txt patch-status.txt
+            git add smc-auth.js
             git commit -m "Fix access request email and RLS insert flow"
           else
             git add workflow-debug.txt patch-status.txt
