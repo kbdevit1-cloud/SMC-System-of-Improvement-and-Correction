@@ -1,6 +1,6 @@
 name: Fix access request email flow
 
-'on':
+on:
   push:
     branches: [main]
     paths:
@@ -16,8 +16,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Patch smc-auth.js
+        shell: python
         run: |
-          python - <<'PY'
           import re
           from pathlib import Path
 
@@ -46,13 +46,13 @@ jobs:
               raise SystemExit('smcNormalizarUsuario block not found')
 
           replacements = {
-            'Digite seu usuário corporativo ou e-mail completo. O sistema bloqueia domínio pessoal.': 'Digite seu e-mail corporativo completo. O sistema bloqueia domínio pessoal.',
-            'Usuário ou e-mail corporativo</label><input id="smcLoginUsuario" type="text" placeholder="nome.sobrenome" autocomplete="off"': 'E-mail corporativo</label><input id="smcLoginUsuario" type="email" placeholder="nome.sobrenome@globaleletronics.ind.br" autocomplete="email"',
-            'Exemplo: nome.sobrenome ou nome.sobrenome${SMC_DOMAIN}': 'Use o e-mail corporativo completo.',
-            'const usuario = normalized.ok ? normalized.usuario : "";': 'const usuario = normalized.ok ? normalized.email : "";',
-            'Usuário ou e-mail corporativo</label><input id="smcCadastroUsuario" type="text"': 'E-mail corporativo</label><input id="smcCadastroUsuario" type="email"',
-            'placeholder="nome.sobrenome" autocomplete="off" autocapitalize="none" spellcheck="false"><small>O sistema aplicará ${SMC_DOMAIN} se você digitar apenas o usuário.</small>': 'placeholder="nome.sobrenome@globaleletronics.ind.br" autocomplete="email" autocapitalize="none" spellcheck="false"><small>Digite o e-mail corporativo completo. Não use apenas o usuário.</small>',
-            'const { error: requestError } = await smcAuthClient.from("access_requests").upsert(payload, { onConflict:"email" });': 'const { error: requestError } = await smcAuthClient.from("access_requests").insert(payload);',
+              'Digite seu usuário corporativo ou e-mail completo. O sistema bloqueia domínio pessoal.': 'Digite seu e-mail corporativo completo. O sistema bloqueia domínio pessoal.',
+              'Usuário ou e-mail corporativo</label><input id="smcLoginUsuario" type="text" placeholder="nome.sobrenome" autocomplete="off"': 'E-mail corporativo</label><input id="smcLoginUsuario" type="email" placeholder="nome.sobrenome@globaleletronics.ind.br" autocomplete="email"',
+              'Exemplo: nome.sobrenome ou nome.sobrenome${SMC_DOMAIN}': 'Use o e-mail corporativo completo.',
+              'const usuario = normalized.ok ? normalized.usuario : "";': 'const usuario = normalized.ok ? normalized.email : "";',
+              'Usuário ou e-mail corporativo</label><input id="smcCadastroUsuario" type="text"': 'E-mail corporativo</label><input id="smcCadastroUsuario" type="email"',
+              'placeholder="nome.sobrenome" autocomplete="off" autocapitalize="none" spellcheck="false"><small>O sistema aplicará ${SMC_DOMAIN} se você digitar apenas o usuário.</small>': 'placeholder="nome.sobrenome@globaleletronics.ind.br" autocomplete="email" autocapitalize="none" spellcheck="false"><small>Digite o e-mail corporativo completo. Não use apenas o usuário.</small>',
+              'const { error: requestError } = await smcAuthClient.from("access_requests").upsert(payload, { onConflict:"email" });': 'const { error: requestError } = await smcAuthClient.from("access_requests").insert(payload);',
           }
           for old, new in replacements.items():
               if old not in text and new not in text:
@@ -60,7 +60,6 @@ jobs:
               text = text.replace(old, new, 1)
 
           p.write_text(text, encoding='utf-8')
-          PY
       - name: Validate JavaScript syntax
         run: node --check smc-auth.js
       - name: Commit patch and remove temporary workflow
