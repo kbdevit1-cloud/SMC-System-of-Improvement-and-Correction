@@ -16,8 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Patch smc-auth.js
-        shell: python
+        shell: bash
         run: |
+          python3 <<'PY'
           import re
           from pathlib import Path
 
@@ -62,6 +63,7 @@ jobs:
               text = text.replace(old, new, 1)
 
           p.write_text(text, encoding='utf-8')
+          PY
       - name: Validate JavaScript syntax
         run: node --check smc-auth.js
       - name: Commit patch and remove temporary workflow
