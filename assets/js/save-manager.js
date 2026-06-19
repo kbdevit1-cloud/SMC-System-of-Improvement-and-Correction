@@ -179,5 +179,60 @@
     const saves = loadLocalSaves();
     return { lastUpdatedAt:saves.lastUpdatedAt, lastSyncedAt:saves.lastSyncedAt, pending:pendingCount(), errors:saves.syncQueue.filter(q => q.status === "error").length, deviceId:saves.deviceId };
   }
+
+  function installNotificationViewGuard(){
+    if (window.__smcNotificationViewGuard) return;
+    window.__smcNotificationViewGuard = true;
+    const VIEWED_KEY = "SMC_VIEWED_NOTIFICATIONS";
+    const OLD_HIDDEN_KEY = "SMC_HIDDEN_NOTIFICATIONS";
+
+    function viewedSet(){
+      try { return new Set(JSON.parse(localStorage.getItem(VIEWED_KEY) || "[]").map(String)); }
+      catch(_) { return new Set(); }
+    }
+    function saveViewed(set){
+      localStorage.setItem(VIEWED_KEY, JSON.stringify(Array.from(set).slice(-300)));
+    }
+    function clearOldHidden(){
+      try { localStorage.removeItem(OLD_HIDDEN_KEY); } catch(_) {}
+    }
+    function applyViewedState(){
+      clearOldHidden();
+      const viewed = viewedSet();
+      document.querySelectorAll("[data-smc-hide-notification]").forEach(btn => {
+        const id = String(btn.dataset.smcHideNotification || "");
+        const card = btn.closest(".planner-notification");
+        const isViewed = viewed.has(id);
+        if (card) card.classList.toggle("viewed", isViewed);
+        btn.textContent = isViewed ? "Visualizada" : "Visualizar";
+        btn.disabled = isViewed;
+        btn.setAttribute("aria-disabled", isViewed ? "true" : "false");
+      });
+    }
+
+    document.addEventListener("click", event => {
+      const btn = event.target?.closest?.("[data-smc-hide-notification]");
+      if (!btn) return;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      const id = String(btn.dataset.smcHideNotification || "");
+      if (id) {
+        const viewed = viewedSet();
+        viewed.add(id);
+        saveViewed(viewed);
+      }
+      applyViewedState();
+    }, true);
+
+    const observer = new MutationObserver(applyViewedState);
+    if (document.documentElement) observer.observe(document.documentElement, { childList:true, subtree:true });
+    document.addEventListener("DOMContentLoaded", applyViewedState);
+    window.addEventListener("smc:saves-updated", applyViewedState);
+    setInterval(applyViewedState, 3000);
+    applyViewedState();
+  }
+
+  installNotificationViewGuard();
   window.SmcSaves = { loadLocalSaves, saveLocal, updateLocal, deleteLocal, markSynced, markError, exportSavesJson, importSavesJson, pendingCount, statusSummary, collections:COLLECTIONS };
 })();
