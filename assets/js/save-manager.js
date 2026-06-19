@@ -236,9 +236,7 @@
   function installSimpleStatusAndResponsibleGuard(){
     if (window.__smcSimpleStatusGuard) return;
     window.__smcSimpleStatusGuard = true;
-    const API_URL = "https://quqqcudiyhajbmtrebvr.functions.supabase.co/solicitacoes-api";
     const UI_STATUSES = ["Aberta", "Em andamento", "Finalizado"];
-    const API_STATUS = { "Aberta":"Recebido", "Em andamento":"Em execução", "Finalizado":"Concluído" };
     const nativeFetch = window.fetch.bind(window);
 
     function toUiStatus(status){
@@ -248,9 +246,6 @@
       if (raw === "Em execução") return "Em andamento";
       if (["Concluído", "Reprovado", "Cancelado"].includes(raw)) return "Finalizado";
       return "Aberta";
-    }
-    function toApiStatus(status){
-      return API_STATUS[toUiStatus(status)] || "Recebido";
     }
     function statusOptions(current, all){
       const normalized = toUiStatus(current);
@@ -298,20 +293,6 @@
       if (!select.value) select.selectedIndex = 0;
       select.setCustomValidity("");
     }
-    function ensureResponsibleForLegacyApi(){
-      const select = document.getElementById("responsavelInicial");
-      if (!select || select.value) return;
-      const fallback = Array.from(select.options).find(option => option.value);
-      if (!fallback) return;
-      select.dataset.smcAutoResponsible = "1";
-      select.value = fallback.value;
-      select.setCustomValidity("");
-    }
-    document.addEventListener("submit", event => {
-      if (event.target?.id !== "formSolicitacao") return;
-      ensureResponsibleForLegacyApi();
-    }, true);
-
     window.fetch = async function(input, init = {}){
       const url = typeof input === "string" ? input : String(input?.url || "");
       if (!url.includes("solicitacoes-api")) return nativeFetch(input, init);
@@ -319,7 +300,7 @@
       if ((method === "POST" || method === "PATCH") && typeof init.body === "string") {
         try {
           const body = JSON.parse(init.body);
-          if (body.status) body.status = toApiStatus(body.status);
+          if (body.status) body.status = toUiStatus(body.status);
           init = { ...init, body: JSON.stringify(body) };
         } catch(_) {}
       }
