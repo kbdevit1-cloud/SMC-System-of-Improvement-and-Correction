@@ -233,6 +233,108 @@
     applyViewedState();
   }
 
+  function installSimpleStatusAndResponsibleGuard(){
+    if (window.__smcSimpleStatusGuard) return;
+    window.__smcSimpleStatusGuard = true;
+    const API_URL = "https://quqqcudiyhajbmtrebvr.functions.supabase.co/solicitacoes-api";
+    const UI_STATUSES = ["Aberta", "Em andamento", "Finalizado"];
+    const API_STATUS = { "Aberta":"Recebido", "Em andamento":"Em execução", "Finalizado":"Concluído" };
+    const nativeFetch = window.fetch.bind(window);
+
+    function toUiStatus(status){
+      const raw = String(status || "").trim();
+      if (UI_STATUSES.includes(raw)) return raw;
+      if (["Recebido", "Em análise", "Aguardando informação", "Encaminhado"].includes(raw)) return "Aberta";
+      if (raw === "Em execução") return "Em andamento";
+      if (["Concluído", "Reprovado", "Cancelado"].includes(raw)) return "Finalizado";
+      return "Aberta";
+    }
+    function toApiStatus(status){
+      return API_STATUS[toUiStatus(status)] || "Recebido";
+    }
+    function statusOptions(current, all){
+      const normalized = toUiStatus(current);
+      const first = all ? '<option value="">Todos status</option>' : "";
+      return first + UI_STATUSES.map(s => `<option value="${s}" ${normalized === s ? "selected" : ""}>${s}</option>`).join("");
+    }
+    function patchStatusControls(){
+      const filter = document.getElementById("f_status");
+      if (filter) {
+        const current = filter.value ? toUiStatus(filter.value) : "";
+        if (filter.dataset.smcSimpleStatus !== "1") {
+          filter.innerHTML = statusOptions("", true);
+          filter.dataset.smcSimpleStatus = "1";
+        }
+        filter.value = UI_STATUSES.includes(current) ? current : "";
+      }
+      document.querySelectorAll("select.status-select").forEach(select => {
+        const current = toUiStatus(select.value);
+        if (select.dataset.smcSimpleStatusValue !== current) {
+          select.innerHTML = statusOptions(current, false);
+          select.value = current;
+          select.dataset.smcSimpleStatusValue = current;
+        }
+      });
+      const aberto = document.querySelector("#st_aberto")?.nextElementSibling;
+      const concluido = document.querySelector("#st_concluido")?.nextElementSibling;
+      if (aberto) aberto.textContent = "Abertas";
+      if (concluido) concluido.textContent = "Finalizadas";
+    }
+    function patchResponsibleOptional(){
+      const field = document.querySelector(".smc-responsible-field");
+      const select = document.getElementById("responsavelInicial");
+      if (!select) return;
+      select.required = false;
+      select.removeAttribute("required");
+      field?.querySelector(".required")?.remove();
+      const label = field?.querySelector("label");
+      if (label && !/opcional/i.test(label.textContent || "")) label.insertAdjacentHTML("beforeend", ' <span class="mini">(opcional)</span>');
+      const hint = document.getElementById("responsavelHint");
+      if (hint && !hint.dataset.smcOptionalHint) {
+        hint.textContent = "Opcional. Se não selecionar, o sistema mantém a demanda aberta para atribuição posterior.";
+        hint.dataset.smcOptionalHint = "1";
+      }
+      if (!select.querySelector('option[value=""]')) select.insertAdjacentHTML("afterbegin", '<option value="">Sem responsável definido</option>');
+      if (!select.value) select.selectedIndex = 0;
+      select.setCustomValidity("");
+    }
+    function ensureResponsibleForLegacyApi(){
+      const select = document.getElementById("responsavelInicial");
+      if (!select || select.value) return;
+      const fallback = Array.from(select.options).find(option => option.value);
+      if (!fallback) return;
+      select.dataset.smcAutoResponsible = "1";
+      select.value = fallback.value;
+      select.setCustomValidity("");
+    }
+    document.addEventListener("submit", event => {
+      if (event.target?.id !== "formSolicitacao") return;
+      ensureResponsibleForLegacyApi();
+    }, true);
+
+    window.fetch = async function(input, init = {}){
+      const url = typeof input === "string" ? input : String(input?.url || "");
+      if (!url.includes("solicitacoes-api")) return nativeFetch(input, init);
+      const method = String(init?.method || "GET").toUpperCase();
+      if ((method === "POST" || method === "PATCH") && typeof init.body === "string") {
+        try {
+          const body = JSON.parse(init.body);
+          if (body.status) body.status = toApiStatus(body.status);
+          init = { ...init, body: JSON.stringify(body) };
+        } catch(_) {}
+      }
+      return nativeFetch(input, init);
+    };
+
+    const observer = new MutationObserver(() => { patchStatusControls(); patchResponsibleOptional(); });
+    if (document.documentElement) observer.observe(document.documentElement, { childList:true, subtree:true });
+    document.addEventListener("DOMContentLoaded", () => { patchStatusControls(); patchResponsibleOptional(); });
+    setInterval(() => { patchStatusControls(); patchResponsibleOptional(); }, 700);
+    patchStatusControls();
+    patchResponsibleOptional();
+  }
+
   installNotificationViewGuard();
+  installSimpleStatusAndResponsibleGuard();
   window.SmcSaves = { loadLocalSaves, saveLocal, updateLocal, deleteLocal, markSynced, markError, exportSavesJson, importSavesJson, pendingCount, statusSummary, collections:COLLECTIONS };
 })();
