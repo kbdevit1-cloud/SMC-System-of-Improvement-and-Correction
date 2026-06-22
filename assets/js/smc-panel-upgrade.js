@@ -92,7 +92,32 @@
     }, true);
   }
 
+  function instalarWatchdogCarregamento(){
+    if (window.__smcLoadWatchdog) return;
+    window.__smcLoadWatchdog = true;
+    setTimeout(function(){
+      try {
+        if (document.readyState !== 'complete') {
+          console.warn('SMC: carregamento externo demorou demais; interrompendo para manter a tela utilizável.');
+          window.stop();
+        }
+        if (!byId('smcAuthOverlay') && !byId('smcSessionPill') && typeof window.smcRenderLoginProfissional === 'function') {
+          window.smcRenderLoginProfissional();
+        }
+        if (!byId('smcAuthOverlay') && !byId('smcInternalOverlay')) {
+          document.body.classList.remove('smc-auth-locked');
+        }
+        instalarCliques();
+        instalarResponsavelOpcional();
+        instalarSubmitSeguro();
+      } catch (e) {
+        console.warn('SMC watchdog falhou:', e);
+      }
+    }, 9000);
+  }
+
   function init(){
+    instalarWatchdogCarregamento();
     instalarShowScreen();
     instalarCliques();
     instalarResponsavelOpcional();
