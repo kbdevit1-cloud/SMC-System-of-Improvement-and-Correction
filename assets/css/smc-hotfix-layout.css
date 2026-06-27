@@ -1,0 +1,8 @@
+/* Hotfix visual seguro do SMC */
+#home .hero{grid-template-columns:1fr!important;max-width:100%!important}
+#home .hero .hero-card{min-height:auto!important}
+#home .hero .hero-card:empty{display:none!important}
+.smc-panel-tabs [data-smc-panel-tab="planner"],.smc-panel-tabs [data-smc-panel-tab="notificacoes"]{display:none!important}
+.smc-panel-view[data-smc-panel-view="planner"],.smc-panel-view[data-smc-panel-view="notificacoes"]{display:none!important}
+.smc-panel-view[data-smc-panel-view="solicitacoes"]:before{content:"Planner integrado às solicitações: responsáveis, status e tarefa vinculada ficam nesta aba.";display:block;margin:0 20px 14px;padding:12px 14px;border:1px solid rgba(47,128,237,.32);border-radius:12px;background:rgba(47,128,237,.1);color:#cfe2fa;font-size:12px;line-height:1.45}
+.notification-list,.notification-row{display:none!important}
